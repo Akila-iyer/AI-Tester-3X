@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Comparator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+        h1 { font-size: 28px; margin-bottom: 8px; color: #1a1a2e; }
+        .subtitle { color: #666; margin-bottom: 32px; font-size: 14px; }
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .upload-box {
+            border: 2px dashed #d0d5dd;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-box:hover, .upload-box.dragover { border-color: #4f46e5; background: #f5f3ff; }
+        .upload-box.has-file { border-color: #22c55e; background: #f0fdf4; }
+        .upload-box .icon { font-size: 32px; margin-bottom: 8px; }
+        .upload-box .label { font-weight: 600; color: #1a1a2e; }
+        .upload-box .hint { font-size: 12px; color: #999; margin-top: 4px; }
+        .upload-box .filename { font-size: 13px; color: #22c55e; margin-top: 6px; font-weight: 500; word-break: break-all; }
+        input[type="file"] { display: none; }
+        .btn-execute {
+            width: 100%;
+            padding: 14px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-execute:hover { background: #4338ca; }
+        .btn-execute:disabled { background: #a5b4fc; cursor: not-allowed; }
+        .btn-execute.loading { background: #a5b4fc; pointer-events: none; }
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+        }
+        .status.error { display: block; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .status.success { display: block; background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .status.loading { display: block; background: #f5f3ff; color: #4f46e5; border: 1px solid #ddd6fe; }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-card .value { font-size: 24px; font-weight: 700; }
+        .stat-card .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .stat-card.pass .value { color: #16a34a; }
+        .stat-card.fail .value { color: #dc2626; }
+        .download-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .download-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            text-align: center;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .download-btn:hover { background: #333; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #ddd; border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 600px) {
+            .upload-grid { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 File Comparator</h1>
+        <p class="subtitle">Upload two files (PDF, Word, Excel, CSV) and compare them line-by-line</p>
+
+        <div class="upload-grid">
+            <div class="upload-box" id="base-box" onclick="document.getElementById('base-file').click()">
+                <div class="icon">📥</div>
+                <div class="label">Base File</div>
+                <div class="hint">Expected / Original</div>
+                <div class="filename" id="base-name"></div>
+                <input type="file" id="base-file" accept=".pdf,.docx,.xlsx,.xls,.csv" onchange="updateFile('base')">
+            </div>
+            <div class="upload-box" id="comp-box" onclick="document.getElementById('comp-file').click()">
+                <div class="icon">📤</div>
+                <div class="label">Compare File</div>
+                <div class="hint">Actual / Changed</div>
+                <div class="filename" id="comp-name"></div>
+                <input type="file" id="comp-file" accept=".pdf,.docx,.xlsx,.xls,.csv" onchange="updateFile('comp')">
+            </div>
+        </div>
+
+        <button class="btn-execute" id="execute-btn" onclick="execute()" disabled>🚀 Execute Comparison</button>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        let files = { base: null, comp: null };
+
+        function updateFile(type) {
+            const input = document.getElementById(type + '-file');
+            const nameEl = document.getElementById(type + '-name');
+            const box = document.getElementById(type + '-box');
+            if (input.files.length > 0) {
+                files[type] = input.files[0];
+                nameEl.textContent = '✅ ' + files[type].name;
+                box.classList.add('has-file');
+            } else {
+                files[type] = null;
+                nameEl.textContent = '';
+                box.classList.remove('has-file');
+            }
+            document.getElementById('execute-btn').disabled = !(files.base && files.comp);
+        }
+
+        function setStatus(msg, type, htmlContent) {
+            const el = document.getElementById('status');
+            el.className = 'status ' + type;
+            el.innerHTML = htmlContent || msg;
+        }
+
+        function execute() {
+            if (!files.base || !files.comp) return;
+
+            const btn = document.getElementById('execute-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Comparing...';
+
+            setStatus('Comparing files...', 'loading', '<span class="spinner"></span> Comparing files...');
+
+            const form = new FormData();
+            form.append('base_file', files.base);
+            form.append('compare_file', files.comp);
+
+            fetch('/compare', { method: 'POST', body: form })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        setStatus('Error: ' + data.error, 'error');
+                        btn.innerHTML = '🚀 Execute Comparison';
+                        btn.disabled = false;
+                        return;
+                    }
+                    const s = data.summary;
+                    const html = `
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                            <span style="font-size:20px;">✅</span>
+                            <strong>Comparison Complete</strong>
+                        </div>
+                        <div class="summary-grid">
+                            <div class="stat-card">
+                                <div class="value">${s.total_lines}</div>
+                                <div class="stat-label">Total Lines</div>
+                            </div>
+                            <div class="stat-card pass">
+                                <div class="value">${s.pass_count}</div>
+                                <div class="stat-label">Pass</div>
+                            </div>
+                            <div class="stat-card fail">
+                                <div class="value">${s.fail_count}</div>
+                                <div class="stat-label">Fail</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="value">${s.pass_percentage}%</div>
+                                <div class="stat-label">Pass Rate</div>
+                            </div>
+                        </div>
+                        <div class="download-links">
+                            <a href="${data.downloads.excel}" class="download-btn">📊 Excel</a>
+                            <a href="${data.downloads.markdown}" class="download-btn">📝 Markdown</a>
+                            <a href="${data.downloads.log}" class="download-btn">📋 Log</a>
+                        </div>
+                    `;
+                    setStatus('', 'success', html);
+
+                    btn.innerHTML = '✅ Completed';
+                    btn.disabled = false;
+                })
+                .catch(err => {
+                    setStatus('Error: ' + err.message, 'error');
+                    btn.innerHTML = '🚀 Execute Comparison';
+                    btn.disabled = false;
+                });
+        }
+
+        // Drag and drop support
+        ['base-box', 'comp-box'].forEach(id => {
+            const box = document.getElementById(id);
+            box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
+            box.addEventListener('dragleave', () => box.classList.remove('dragover'));
+            box.addEventListener('drop', e => {
+                e.preventDefault();
+                box.classList.remove('dragover');
+                const type = id === 'base-box' ? 'base' : 'comp';
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const input = document.getElementById(type + '-file');
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+                    updateFile(type);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

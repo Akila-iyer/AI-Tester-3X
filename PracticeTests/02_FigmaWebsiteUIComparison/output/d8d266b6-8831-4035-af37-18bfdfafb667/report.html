@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual UI Testing Report — d8d266b6</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1a1a2e; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+.header { background: #1a1a2e; color: #fff; padding: 24px 32px; border-radius: 12px; margin-bottom: 24px; }
+.header h1 { font-size: 24px; margin-bottom: 4px; }
+.header .meta { color: #9ca3af; font-size: 14px; }
+.verdict { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 14px; margin-top: 8px; }
+.verdict-pass { background: #d1fae5; color: #065f46; }
+.verdict-warn { background: #fef3c7; color: #92400e; }
+.verdict-fail { background: #fee2e2; color: #991b1b; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.card .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.card .value { font-size: 32px; font-weight: 700; margin-top: 4px; }
+.section { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
+.section h3 { font-size: 16px; color: #374151; margin-bottom: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; }
+.bar-container { margin-bottom: 12px; }
+.bar-label { font-size: 14px; margin-bottom: 4px; color: #374151; }
+.bar { height: 20px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+.bar-text { font-size: 12px; color: #6b7280; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; padding: 10px 12px; background: #f3f4f6; color: #374151; font-weight: 600; border-bottom: 2px solid #e5e7eb; }
+td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; }
+tr:hover { background: #f9fafb; }
+.status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.status-pass { background: #d1fae5; color: #065f46; }
+.status-fail { background: #fee2e2; color: #991b1b; }
+.severity-critical { background: #7f1d1d; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.severity-high { background: #dc2626; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.severity-medium { background: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.severity-low { background: #9ca3af; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.element-detail { margin-bottom: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; }
+.element-detail h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.element-detail .prop-table { font-size: 13px; }
+.prop-table td:first-child { font-weight: 500; color: #6b7280; width: 160px; }
+.filter-bar { margin-bottom: 16px; }
+.filter-bar select { padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Visual UI Testing Report</h1>
+        <div class="meta">
+            Session: d8d266b6 |
+            2026-06-14 |
+            <a href="https://www.figma.com/file/test/mock" style="color:#93c5fd;">Figma</a> vs
+            <a href="https://example.com" style="color:#93c5fd;">Website</a>
+        </div>
+        <div class="verdict verdict-fail">FAIL — 26 issues found, 1 critical</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="label">Similarity</div>
+            <div class="value">58.1%</div>
+        </div>
+        <div class="card">
+            <div class="label">Total Checks</div>
+            <div class="value">62</div>
+        </div>
+        <div class="card">
+            <div class="label">Passed</div>
+            <div class="value" style="color:#059669;">36</div>
+        </div>
+        <div class="card">
+            <div class="label">Failed</div>
+            <div class="value" style="color:#dc2626;">26</div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="section">
+            <h3>Severity Breakdown</h3>
+            <div style="display:flex;align-items:center;margin-bottom:8px;"><div style="width:80px;font-size:14px;color:#374151;">Critical</div><div class="bar" style="flex:1;"><div class="bar-fill" style="width:3.8461538461538463%;background:#7f1d1d;"></div></div><div class="bar-text" style="margin-left:8px;">1</div></div><div style="display:flex;align-items:center;margin-bottom:8px;"><div style="width:80px;font-size:14px;color:#374151;">High</div><div class="bar" style="flex:1;"><div class="bar-fill" style="width:65.38461538461539%;background:#dc2626;"></div></div><div class="bar-text" style="margin-left:8px;">17</div></div><div style="display:flex;align-items:center;margin-bottom:8px;"><div style="width:80px;font-size:14px;color:#374151;">Medium</div><div class="bar" style="flex:1;"><div class="bar-fill" style="width:19.230769230769234%;background:#f59e0b;"></div></div><div class="bar-text" style="margin-left:8px;">5</div></div><div style="display:flex;align-items:center;margin-bottom:8px;"><div style="width:80px;font-size:14px;color:#374151;">Low</div><div class="bar" style="flex:1;"><div class="bar-fill" style="width:11.538461538461538%;background:#9ca3af;"></div></div><div class="bar-text" style="margin-left:8px;">3</div></div>
+        </div>
+        <div class="section">
+            <h3>Category Breakdown</h3>
+            <div class="bar-container"><div class="bar-label">Typography <span style="float:right;color:#6b7280;">43.8%</span></div><div class="bar"><div class="bar-fill" style="width:43.8%;background:#3b82f6;"></div></div></div><div class="bar-container"><div class="bar-label">Colors <span style="float:right;color:#6b7280;">50.0%</span></div><div class="bar"><div class="bar-fill" style="width:50.0%;background:#8b5cf6;"></div></div></div><div class="bar-container"><div class="bar-label">Layout <span style="float:right;color:#6b7280;">70.6%</span></div><div class="bar"><div class="bar-fill" style="width:70.6%;background:#10b981;"></div></div></div><div class="bar-container"><div class="bar-label">Components <span style="float:right;color:#6b7280;">25.0%</span></div><div class="bar"><div class="bar-fill" style="width:25.0%;background:#f59e0b;"></div></div></div>
+        </div>
+    </div>
+
+    
+
+    <div class="section">
+        <h3>Issues</h3>
+        <div class="filter-bar">
+            <select id="sevFilter" onchange="filterTable()">
+                <option value="all">All Severities</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
+        <table id="issueTable">
+            <thead>
+                <tr><th>Element</th><th>Property</th><th>Expected</th><th>Actual</th><th>Status</th><th>Severity</th></tr>
+            </thead>
+            <tbody>
+                <tr data-severity="high"><td>Hero Heading</td><td>font_family</td><td>Inter</td><td>system-ui, sans-serif</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>font_size</td><td>48.0</td><td>24.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="low"><td>Hero Heading</td><td>letter_spacing</td><td>-1.0</td><td>0.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-low">low</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>line_height</td><td>60.0</td><td>28.8</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="medium"><td>Hero Heading</td><td>text_align</td><td>center</td><td>start</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-medium">medium</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>color</td><td>rgba(26,26,46,1.0)</td><td>rgba(0,0,0,1.0)</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="low"><td>Hero Heading</td><td>border_color</td><td>None</td><td>{'r': 0, 'g': 0, 'b': 0, 'a': </td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-low">low</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>position_x</td><td>220.0</td><td>384.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>width</td><td>1000.0</td><td>1152.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>height</td><td>60.0</td><td>32.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="medium"><td>Hero Heading</td><td>margin_top</td><td>0.0</td><td>16.08</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-medium">medium</span></td></tr>
+<tr data-severity="high"><td>Hero Heading</td><td>content</td><td>Welcome to Our Platform</td><td>Example Domain</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>font_family</td><td>Inter</td><td>system-ui, sans-serif</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>font_size</td><td>24.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>line_height</td><td>32.0</td><td>19.2</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="medium"><td>Hero Subheading</td><td>text_align</td><td>center</td><td>start</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-medium">medium</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>color</td><td>rgba(107,114,128,1.0)</td><td>rgba(0,0,0,1.0)</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="low"><td>Hero Subheading</td><td>border_color</td><td>None</td><td>{'r': 0, 'g': 0, 'b': 0, 'a': </td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-low">low</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>position_x</td><td>320.0</td><td>384.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>position_y</td><td>236.0</td><td>247.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>width</td><td>800.0</td><td>1152.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>height</td><td>32.0</td><td>21.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+<tr data-severity="medium"><td>Hero Subheading</td><td>margin_top</td><td>0.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-medium">medium</span></td></tr>
+<tr data-severity="medium"><td>Hero Subheading</td><td>margin_bottom</td><td>32.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-medium">medium</span></td></tr>
+<tr data-severity="critical"><td>Hero Subheading</td><td>tag</td><td>h2</td><td>p</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-critical">critical</span></td></tr>
+<tr data-severity="high"><td>Hero Subheading</td><td>content</td><td>Your journey starts here. Buil</td><td>Learn more</td><td><span class="status-badge status-fail">FAIL</span></td><td><span class="severity-high">high</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Element Details</h3>
+        <div class="element-detail"><h4>Hero Heading <span style="color:#6b7280;font-weight:400;">(h1)</span></h4><table class="prop-table"><thead><tr><th>Property</th><th>Expected</th><th>Actual</th><th>Status</th><th>Severity</th></tr></thead><tbody><tr><td>font_family</td><td>Inter</td><td>system-ui, sans-serif</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>font_size</td><td>48.0</td><td>24.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>font_weight</td><td>700.0</td><td>700.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>letter_spacing</td><td>-1.0</td><td>0.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>low</td></tr><tr><td>line_height</td><td>60.0</td><td>28.8</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>text_align</td><td>center</td><td>start</td><td><span class="status-badge status-fail">FAIL</span></td><td>medium</td></tr><tr><td>text_decoration</td><td>none</td><td>none</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>text_transform</td><td>none</td><td>none</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>color</td><td>rgba(26,26,46,1.0)</td><td>rgba(0,0,0,1.0)</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>background_color</td><td>None</td><td>None</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_color</td><td>None</td><td>{'r': 0, 'g': 0, 'b': 0, </td><td><span class="status-badge status-fail">FAIL</span></td><td>low</td></tr><tr><td>opacity</td><td>1.0</td><td>1.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>position_x</td><td>220.0</td><td>384.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>position_y</td><td>160.0</td><td>162.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>width</td><td>1000.0</td><td>1152.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>height</td><td>60.0</td><td>32.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>margin_top</td><td>0.0</td><td>16.08</td><td><span class="status-badge status-fail">FAIL</span></td><td>medium</td></tr><tr><td>margin_right</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>margin_bottom</td><td>16.0</td><td>16.08</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>margin_left</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_top</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_right</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_bottom</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_left</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_radius</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_width</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>display</td><td>block</td><td>block</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>opacity</td><td>1.0</td><td>1.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>overflow</td><td>visible</td><td>visible</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>tag</td><td>h1</td><td>h1</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>content</td><td>Welcome to Our Platform</td><td>Example Domain</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr></tbody></table></div>
+<div class="element-detail"><h4>Hero Subheading <span style="color:#6b7280;font-weight:400;">(h2)</span></h4><table class="prop-table"><thead><tr><th>Property</th><th>Expected</th><th>Actual</th><th>Status</th><th>Severity</th></tr></thead><tbody><tr><td>font_family</td><td>Inter</td><td>system-ui, sans-serif</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>font_size</td><td>24.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>font_weight</td><td>400.0</td><td>400.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>letter_spacing</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>line_height</td><td>32.0</td><td>19.2</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>text_align</td><td>center</td><td>start</td><td><span class="status-badge status-fail">FAIL</span></td><td>medium</td></tr><tr><td>text_decoration</td><td>none</td><td>none</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>text_transform</td><td>none</td><td>none</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>color</td><td>rgba(107,114,128,1.0)</td><td>rgba(0,0,0,1.0)</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>background_color</td><td>None</td><td>None</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_color</td><td>None</td><td>{'r': 0, 'g': 0, 'b': 0, </td><td><span class="status-badge status-fail">FAIL</span></td><td>low</td></tr><tr><td>opacity</td><td>1.0</td><td>1.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>position_x</td><td>320.0</td><td>384.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>position_y</td><td>236.0</td><td>247.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>width</td><td>800.0</td><td>1152.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>height</td><td>32.0</td><td>21.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr><tr><td>margin_top</td><td>0.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>medium</td></tr><tr><td>margin_right</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>margin_bottom</td><td>32.0</td><td>16.0</td><td><span class="status-badge status-fail">FAIL</span></td><td>medium</td></tr><tr><td>margin_left</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_top</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_right</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_bottom</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>padding_left</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_radius</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>border_width</td><td>0.0</td><td>0.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>display</td><td>block</td><td>block</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>opacity</td><td>1.0</td><td>1.0</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>overflow</td><td>visible</td><td>visible</td><td><span class="status-badge status-pass">PASS</span></td><td>none</td></tr><tr><td>tag</td><td>h2</td><td>p</td><td><span class="status-badge status-fail">FAIL</span></td><td>critical</td></tr><tr><td>content</td><td>Your journey starts here.</td><td>Learn more</td><td><span class="status-badge status-fail">FAIL</span></td><td>high</td></tr></tbody></table></div>
+    </div>
+</div>
+<script>
+function filterTable() {
+    var filter = document.getElementById('sevFilter').value;
+    var rows = document.querySelectorAll('#issueTable tbody tr');
+    rows.forEach(function(row) {
+        var sev = row.getAttribute('data-severity') || '';
+        if (filter === 'all' || sev === filter) row.style.display = '';
+        else row.style.display = 'none';
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Secrets
+.env
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Temporary files
+.tmp/
+
+# Output files (reports are user-generated)
+output/reports/
+*.log

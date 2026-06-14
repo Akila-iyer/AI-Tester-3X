@@ -1,0 +1,37 @@
+{
+  "overall_similarity": 58.1,
+  "total_elements": 2,
+  "total_checks": 62,
+  "pass_count": 36,
+  "fail_count": 26,
+  "pass_percentage": 58.1,
+  "by_severity": {
+    "critical": 1,
+    "high": 17,
+    "medium": 5,
+    "low": 3
+  },
+  "by_category": {
+    "typography": {
+      "pass": 7,
+      "fail": 9,
+      "pass_pct": 43.8
+    },
+    "colors": {
+      "pass": 4,
+      "fail": 4,
+      "pass_pct": 50.0
+    },
+    "layout": {
+      "pass": 24,
+      "fail": 10,
+      "pass_pct": 70.6
+    },
+    "components": {
+      "pass": 1,
+      "fail": 3,
+      "pass_pct": 25.0
+    }
+  },
+  "verdict": "FAIL \u2014 26 issues found, 1 critical"
+}

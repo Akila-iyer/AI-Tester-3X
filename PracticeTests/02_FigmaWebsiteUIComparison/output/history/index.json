@@ -1,0 +1,18 @@
+[
+  {
+    "id": "d8d266b6-8831-4035-af37-18bfdfafb667",
+    "date": "2026-06-14T18:29:59.190206+00:00",
+    "figma_url": "https://www.figma.com/file/test/mock",
+    "web_url": "https://example.com",
+    "pass_rate": 58.1,
+    "status": "complete"
+  },
+  {
+    "id": "52593466-6415-4984-8834-7de1ccae9502",
+    "date": "2026-06-14T18:29:06.968580+00:00",
+    "figma_url": "https://www.figma.com/file/test/mock",
+    "web_url": "https://example.com",
+    "pass_rate": 0,
+    "status": "complete"
+  }
+]

@@ -1,0 +1,66 @@
+# Visual UI Testing Platform — Default Configuration
+# Override per project by copying to config/project.yaml
+
+project:
+  name: "My Project"
+  description: ""
+
+comparison:
+  tolerance:
+    position: 2        # px
+    size: 2            # px
+    color_delta_e: 2.0
+    font_size: 1       # px
+    font_weight: 100
+    opacity: 0.05
+    border_radius: 1   # px
+    line_height: 2     # px
+    letter_spacing: 0.5 # px
+
+  ignore:
+    dynamic_text: true
+    timestamps: true
+    advertisements: true
+    animations: true
+    selectors: []
+
+  viewports:
+    - name: "Desktop"
+      width: 1920
+      height: 1080
+      enabled: true
+    - name: "Laptop"
+      width: 1440
+      height: 900
+      enabled: true
+    - name: "Tablet"
+      width: 768
+      height: 1024
+      enabled: false
+    - name: "Mobile"
+      width: 375
+      height: 667
+      enabled: false
+
+  categories:
+    typography: true
+    colors: true
+    layout: true
+    accessibility: true
+    images: true
+    components: true
+    responsive: true
+
+ai:
+  enabled: false
+  provider: "openai"
+  model: "gpt-4o-mini"
+
+ui:
+  theme: "system"       # light | dark | system
+  language: "en"
+  items_per_page: 25
+
+history:
+  enabled: true
+  max_runs: 100

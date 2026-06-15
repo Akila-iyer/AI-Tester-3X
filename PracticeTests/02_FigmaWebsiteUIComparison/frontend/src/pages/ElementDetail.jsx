@@ -1,74 +1,109 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ChevronRight } from "lucide-react";
-import { mockElementDetail } from "../data/mock";
+import { ArrowLeft, ChevronRight, Loader2 } from "lucide-react";
+import { api } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
-import clsx from "clsx";
 
 export default function ElementDetail() {
   const { sessionId, elementId } = useParams();
-  const el = mockElementDetail;
+  const [el, setEl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const PropertyRow = ({ label, figma, web, check }) => (
-    <tr className="border-b border-[var(--color-border)] hover:bg-[var(--color-surface-alt)]/50">
-      <td className="px-4 py-3 text-sm font-medium">{label}</td>
-      <td className="px-4 py-3 text-sm">{figma}</td>
-      <td className="px-4 py-3 text-sm">{web}</td>
-      <td className="px-4 py-3"><StatusBadge status={check?.status} /></td>
-      <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{check?.tolerance || "-"}</td>
-      <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{check?.difference || "-"}</td>
-      <td className="px-4 py-3">{check?.severity ? <StatusBadge severity={check.severity} /> : "-"}</td>
-    </tr>
-  );
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const data = await api.getElementDetail(sessionId, elementId);
+        setEl(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDetail();
+  }, [sessionId, elementId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={32} className="animate-spin text-[var(--color-primary)]" />
+      </div>
+    );
+  }
+
+  if (error || !el) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20">
+        <p className="text-[var(--color-error)] font-medium">{error || "Element not found"}</p>
+        <Link to={`/results/${sessionId}`} className="inline-block mt-4 text-[var(--color-primary)] hover:underline">Back to Results</Link>
+      </div>
+    );
+  }
+
+  const figma = el.figma || {};
+  const web = el.web || {};
+  const checks = el.checks || [];
+  const aiExpl = el.ai_explanation || [];
+  const failCount = checks.filter((c) => c.status === "FAIL").length;
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
         <Link to={`/results/${sessionId}`} className="hover:text-[var(--color-text)]">Results</Link>
         <ChevronRight size={14} />
-        <span className="text-[var(--color-text)] font-medium">{el.name}</span>
+        <span className="text-[var(--color-text)] font-medium">{figma.name || elementId}</span>
       </div>
 
-      {/* Header */}
       <div className="flex items-center gap-4">
         <Link to={`/results/${sessionId}`} className="p-2 rounded-lg hover:bg-[var(--color-surface-alt)]"><ArrowLeft size={18} /></Link>
         <div>
-          <div className="flex items-center gap-2"><h2 className="text-2xl font-bold">{el.name}</h2><StatusBadge status={el.checks.some((c) => c.status === "FAIL") ? "FAIL" : "PASS"} /></div>
-          <p className="text-sm text-[var(--color-text-secondary)]">{el.type} · <code className="bg-[var(--color-surface-alt)] px-1.5 py-0.5 rounded">{el.tag}</code> · Session: {sessionId}</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">{figma.name || elementId}</h2>
+            <StatusBadge status={failCount > 0 ? "FAIL" : "PASS"} />
+          </div>
+          <p className="text-sm text-[var(--color-text-secondary)]">{figma.type || "?"} · <code className="bg-[var(--color-surface-alt)] px-1.5 py-0.5 rounded">{figma.tag || "?"}</code> · Session: {sessionId}</p>
         </div>
       </div>
 
       {/* Info Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Figma Card */}
         <div className="lg:col-span-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-[var(--color-primary)] mb-3">🎨 Figma</h3>
+          <h3 className="text-sm font-semibold text-[var(--color-primary)] mb-3">Figma</h3>
           <div className="space-y-2 text-sm">
-            <div><span className="text-[var(--color-text-secondary)]">Content:</span> <span className="font-medium">{el.figma.content}</span></div>
-            <div><span className="text-[var(--color-text-secondary)]">Position:</span> ({el.figma.bounding_box.x}, {el.figma.bounding_box.y})</div>
-            <div><span className="text-[var(--color-text-secondary)]">Size:</span> {el.figma.bounding_box.width} × {el.figma.bounding_box.height}</div>
-            <div><span className="text-[var(--color-text-secondary)]">Breadcrumb:</span> <code className="text-xs">{el.figma.hierarchy.breadcrumb.join(" › ")}</code></div>
+            <div><span className="text-[var(--color-text-secondary)]">Content:</span> <span className="font-medium">{(figma.content || "") || "-"}</span></div>
+            <div><span className="text-[var(--color-text-secondary)]">Position:</span> ({figma.bounding_box?.x || "?"}, {figma.bounding_box?.y || "?"})</div>
+            <div><span className="text-[var(--color-text-secondary)]">Size:</span> {figma.bounding_box?.width || "?"} x {figma.bounding_box?.height || "?"}</div>
+            <div><span className="text-[var(--color-text-secondary)]">Breadcrumb:</span> <code className="text-xs">{(figma.hierarchy?.breadcrumb || []).join(" > ")}</code></div>
           </div>
         </div>
-        {/* Web Card */}
         <div className="lg:col-span-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-[var(--color-info)] mb-3">🌐 Web</h3>
+          <h3 className="text-sm font-semibold text-blue-500 mb-3">Web</h3>
           <div className="space-y-2 text-sm">
-            <div><span className="text-[var(--color-text-secondary)]">Content:</span> <span className="font-medium">{el.web.content}</span></div>
-            <div><span className="text-[var(--color-text-secondary)]">Position:</span> ({el.web.bounding_box.x}, {el.web.bounding_box.y})</div>
-            <div><span className="text-[var(--color-text-secondary)]">Size:</span> {el.web.bounding_box.width} × {el.web.bounding_box.height}</div>
-            <div><span className="text-[var(--color-text-secondary)]">Breadcrumb:</span> <code className="text-xs">{el.web.hierarchy.breadcrumb.join(" › ")}</code></div>
+            <div><span className="text-[var(--color-text-secondary)]">Content:</span> <span className="font-medium">{(web.content || "") || "-"}</span></div>
+            <div><span className="text-[var(--color-text-secondary)]">Position:</span> ({web.bounding_box?.x || "?"}, {web.bounding_box?.y || "?"})</div>
+            <div><span className="text-[var(--color-text-secondary)]">Size:</span> {web.bounding_box?.width || "?"} x {web.bounding_box?.height || "?"}</div>
+            <div><span className="text-[var(--color-text-secondary)]">Breadcrumb:</span> <code className="text-xs">{(web.hierarchy?.breadcrumb || []).join(" > ")}</code></div>
           </div>
         </div>
-        {/* AI Summary Card */}
         <div className="lg:col-span-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-[var(--color-warning)] mb-3">🤖 AI Analysis</h3>
-          <div className="space-y-2 text-sm">
-            <div><span className="text-[var(--color-text-secondary)]">Issues:</span> <span className="font-medium text-[var(--color-error)]">{el.checks.filter((c) => c.status === "FAIL").length} failures</span></div>
-            <div><span className="text-[var(--color-text-secondary)]">Description:</span> Element does not match design spec</div>
-            <div><span className="text-[var(--color-text-secondary)]">Root Cause:</span> Responsive breakpoint override</div>
-            <div><span className="text-[var(--color-text-secondary)]">Suggested Fix:</span> Add media query override</div>
-          </div>
+          <h3 className="text-sm font-semibold text-yellow-500 mb-3">AI Analysis</h3>
+          {aiExpl.length > 0 ? (
+            <div className="space-y-2 text-sm">
+              {aiExpl.map((a, i) => (
+                <div key={i}>
+                  <div><span className="text-[var(--color-text-secondary)]">Issue:</span> {a.property}</div>
+                  <div><span className="text-[var(--color-text-secondary)]">Root Cause:</span> {a.root_cause}</div>
+                  <div><span className="text-[var(--color-text-secondary)]">Suggested Fix:</span> {a.suggested_fix}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2 text-sm">
+              <div><span className="text-[var(--color-text-secondary)]">Issues:</span> <span className="font-medium text-[var(--color-error)]">{failCount} failures</span></div>
+              <p className="text-xs text-[var(--color-text-secondary)]">AI analysis not available</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -87,33 +122,17 @@ export default function ElementDetail() {
               </tr>
             </thead>
             <tbody>
-              {el.checks.map((c, i) => {
-                const getVal = (side) => {
-                  const map = {
-                    "font-size": `font_size`,
-                    "font-weight": `font_weight`,
-                    "letter-spacing": `letter_spacing`,
-                    "line-height": `line_height`,
-                    "text-align": `text_align`,
-                    "text-color": ["color", "color"],
-                    "width": ["bounding_box", "width"],
-                    "x-position": ["bounding_box", "x"],
-                    "margin-bottom": ["margin", "bottom"],
-                  };
-                  return "-";
-                };
-                return (
-                  <tr key={i} className="border-b border-[var(--color-border)] hover:bg-[var(--color-surface-alt)]/50">
-                    <td className="px-4 py-3 font-medium">{c.property}</td>
-                    <td className="px-4 py-3">{c.expected}</td>
-                    <td className="px-4 py-3">{c.actual}</td>
-                    <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{c.tolerance}</td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{c.difference}</td>
-                    <td className="px-4 py-3">{c.severity ? <StatusBadge severity={c.severity} /> : "-"}</td>
-                  </tr>
-                );
-              })}
+              {checks.map((c, i) => (
+                <tr key={i} className="border-b border-[var(--color-border)] hover:bg-[var(--color-surface-alt)]/50">
+                  <td className="px-4 py-3 font-medium">{c.property}</td>
+                  <td className="px-4 py-3">{String(c.expected ?? "-")}</td>
+                  <td className="px-4 py-3">{String(c.actual ?? "-")}</td>
+                  <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
+                  <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{c.tolerance || "-"}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{c.difference != null ? c.difference : "-"}</td>
+                  <td className="px-4 py-3">{c.severity ? <StatusBadge severity={c.severity} /> : "-"}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

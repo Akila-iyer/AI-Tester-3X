@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import clsx from "clsx";
+import { api } from "../services/api";
 
 const stages = [
   { id: "extracting", label: "Extracting", detail: "Retrieving data from sources" },
@@ -16,28 +17,66 @@ export default function Progress() {
   const [currentStage, setCurrentStage] = useState(0);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("running");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (status !== "running") return;
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) {
+    let interval;
+    const poll = () => {
+      interval = setInterval(async () => {
+        try {
+          const data = await api.getStatus(sessionId);
+          setProgress(Math.round((data.progress.stage_progress || 0) * 100));
+          setCurrentStage(data.progress.current_stage_index || 0);
+
+          if (data.status === "complete") {
+            clearInterval(interval);
+            setStatus("complete");
+            setProgress(100);
+          } else if (data.status === "failed") {
+            clearInterval(interval);
+            setStatus("failed");
+            setError(data.error || "Comparison failed");
+          }
+        } catch (err) {
           clearInterval(interval);
-          setStatus("complete");
-          return 100;
+          setStatus("failed");
+          setError(err.message);
         }
-        const newP = p + Math.random() * 8 + 2;
-        const stage = Math.min(Math.floor((newP / 100) * stages.length), stages.length - 1);
-        setCurrentStage(stage);
-        return Math.min(newP, 100);
-      });
-    }, 600);
+      }, 2000);
+    };
+    poll();
     return () => clearInterval(interval);
-  }, [status]);
+  }, [sessionId]);
+
+  if (status === "failed") {
+    return (
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+            <XCircle size={32} className="text-[var(--color-error)]" />
+          </div>
+          <h2 className="text-xl font-bold">Comparison Failed</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">{error || "Something went wrong"}</p>
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <Link to="/new" className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors">Try Again</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto text-center">
-      {status === "running" ? (
+      {status === "complete" ? (
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-success)]/10 flex items-center justify-center">
+            <CheckCircle2 size={32} className="text-[var(--color-success)]" />
+          </div>
+          <h2 className="text-xl font-bold">Comparison Complete</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">All checks finished successfully</p>
+          <Link to={`/results/${sessionId}`} className="inline-block mt-6 px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors">View Results</Link>
+        </div>
+      ) : (
         <div className="space-y-8">
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8">
             <div className="w-16 h-16 mx-auto mb-4 relative">
@@ -67,15 +106,6 @@ export default function Progress() {
               ))}
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-success)]/10 flex items-center justify-center">
-            <CheckCircle2 size={32} className="text-[var(--color-success)]" />
-          </div>
-          <h2 className="text-xl font-bold">Comparison Complete</h2>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">All checks finished successfully</p>
-          <a href={`/results/${sessionId}`} className="inline-block mt-6 px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors">View Results</a>
         </div>
       )}
     </div>

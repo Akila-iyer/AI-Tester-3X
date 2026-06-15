@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PlusCircle, Play, BarChart3, Eye, History, Settings, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { LayoutDashboard, PlusCircle, History, Settings, X } from "lucide-react";
 import clsx from "clsx";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/new", icon: PlusCircle, label: "New Comparison" },
-  { to: "/progress/demo", icon: Play, label: "Progress" },
-  { to: "/results/demo", icon: BarChart3, label: "Results" },
-  { to: "/results/demo/element/hero-title", icon: Eye, label: "Element Detail" },
-  { to: "/results/demo/screenshots", icon: Eye, label: "Screenshots" },
   { to: "/history", icon: History, label: "History" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];

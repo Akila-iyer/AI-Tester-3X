@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
+import { Play, ChevronDown, ChevronUp } from "lucide-react";
 import clsx from "clsx";
+import { api } from "../services/api";
 
 const viewportPresets = [
   { name: "Desktop", width: 1920, height: 1080 },
@@ -22,6 +23,8 @@ const categories = [
 export default function NewComparison() {
   const navigate = useNavigate();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     figmaUrl: "",
     webUrl: "",
@@ -37,9 +40,33 @@ export default function NewComparison() {
   const toggleArr = (field, item) => setForm((f) => ({ ...f, [field]: f[field].includes(item) ? f[field].filter((x) => x !== item) : [...f[field], item] }));
   const updateTol = (key, val) => setForm((f) => ({ ...f, tolerances: { ...f.tolerances, [key]: val } }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/progress/demo");
+    setSubmitting(true);
+    setError("");
+
+    const vps = form.viewports
+      .map((v) => viewportPresets.find((p) => p.name === v))
+      .filter(Boolean);
+
+    const payload = {
+      figma_url: form.figmaUrl,
+      web_url: form.webUrl,
+      figma_token: form.figmaToken,
+      viewports: vps,
+      categories: form.categories,
+      ai_enabled: form.aiAnalysis,
+      tolerance: form.tolerances,
+    };
+
+    try {
+      const data = await api.createComparison(payload);
+      navigate(`/progress/${data.session_id}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -48,12 +75,17 @@ export default function NewComparison() {
       <p className="text-sm text-[var(--color-text-secondary)] mb-6">Compare a Figma design against a live webpage</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Info */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-sm text-red-700 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 space-y-4">
           <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">Source Files</h3>
           <div>
             <label className="block text-sm font-medium mb-1.5">Figma File URL</label>
-            <input type="url" placeholder="https://www.figma.com/file/abc123/..." value={form.figmaUrl} onChange={(e) => update("figmaUrl", e.target.value)} required className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30" />
+            <input type="url" placeholder="https://www.figma.com/file/abc123/..." value={form.figmaUrl} onChange={(e) => update("figmaUrl", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1.5">Webpage URL</label>
@@ -62,7 +94,7 @@ export default function NewComparison() {
           <div>
             <label className="block text-sm font-medium mb-1.5">Figma Access Token</label>
             <div className="relative">
-              <input type="password" placeholder="figd_xxxxxxxxxxxx" value={form.figmaToken} onChange={(e) => update("figmaToken", e.target.value)} required className="w-full px-3 py-2.5 pr-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30" />
+              <input type="password" placeholder="figd_xxxxxxxxxxxx (leave empty for mock mode)" value={form.figmaToken} onChange={(e) => update("figmaToken", e.target.value)} className="w-full px-3 py-2.5 pr-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30" />
             </div>
           </div>
         </div>
@@ -76,7 +108,7 @@ export default function NewComparison() {
                 className={clsx("px-4 py-2 rounded-xl text-sm font-medium border transition-colors", form.viewports.includes(vp.name)
                   ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]"
                   : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text)]"
-                )}>{vp.name} <span className="opacity-60">{vp.width}×{vp.height}</span></button>
+                )}>{vp.name} <span className="opacity-60">{vp.width}x{vp.height}</span></button>
             ))}
           </div>
         </div>
@@ -131,8 +163,8 @@ export default function NewComparison() {
           )}
         </div>
 
-        <button type="submit" className="w-full py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors flex items-center justify-center gap-2 text-base">
-          <Play size={18} /> Start Comparison
+        <button type="submit" disabled={submitting} className="w-full py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors flex items-center justify-center gap-2 text-base disabled:opacity-50">
+          <Play size={18} /> {submitting ? "Starting..." : "Start Comparison"}
         </button>
       </form>
     </div>
